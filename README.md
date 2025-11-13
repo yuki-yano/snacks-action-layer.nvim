@@ -53,12 +53,12 @@ require('snacks_action_layer').setup({
     format = 'text',
     confirm = 'item_action',
   },
-  keymaps = {      -- inserted only when the key is not already configured for that source
+  keymaps = {      -- define your own keymaps; nothing is injected by default
     input = {
-      ['>'] = { 'action_layer:open', mode = { 'n', 'i' }, nowait = true },
+      -- ['>'] = { 'action_layer:open', mode = { 'n', 'i' }, nowait = true },
     },
     list = {
-      ['>'] = { 'action_layer:open', mode = { 'n' }, nowait = true },
+      -- ['>'] = { 'action_layer:open', mode = { 'n' }, nowait = true },
     },
   },
   pickers = {
@@ -81,7 +81,7 @@ require('snacks_action_layer').setup({
 ```
 
 - `pickers.default` acts as the base for every source. Values in `pickers.<name>` override it. The plugin ships with no builtin actions (Git or otherwise); you decide every handler.
-- Keymaps are merged in this order: global `keymaps` → `pickers.default.keymaps` → `pickers.<name>.keymaps`. Keys marked as `false` are omitted. Existing `snacks_opts.picker.sources[name].win.*.keys[key]` entries are never overwritten. Keymaps are injected only for sources explicitly defined in `pickers` (other than `default`).
+- Keymaps are merged in this order: global `keymaps` → `pickers.default.keymaps` → `pickers.<name>.keymaps`. Keys marked as `false` are omitted. Existing `snacks_opts.picker.sources[name].win.*.keys[key]` entries are never overwritten. Keymaps are injected only for sources explicitly defined in `pickers` (other than `default`). By default no keymaps are inserted, so make sure to define your preferred binding for `action_layer:open` yourself.
 - `actions` entries look like:
 
 ```lua

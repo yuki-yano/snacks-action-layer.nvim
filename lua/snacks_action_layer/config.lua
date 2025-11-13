@@ -8,12 +8,8 @@ local defaults = {
     confirm = 'item_action',
   },
   keymaps = {
-    input = {
-      ['>'] = { 'action_layer:open', mode = { 'n', 'i' }, nowait = true },
-    },
-    list = {
-      ['>'] = { 'action_layer:open', mode = { 'n' }, nowait = true },
-    },
+    input = {},
+    list = {},
   },
   pickers = {
     default = {
