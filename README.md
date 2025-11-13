@@ -9,46 +9,37 @@ Snacks Action Layer augments any [snacks.nvim](https://github.com/folke/snacks.n
 
 ## Installation
 
-### lazy.nvim
+### lazy.nvim (config hook)
 
 ```lua
-return {
+{
+  'yuki-yano/snacks-action-layer.nvim',
+  dir = '~/repos/github.com/yuki-yano/snacks-action-layer.nvim', -- optional local dev
+}
+
+{
   'folke/snacks.nvim',
-  opts = function(_, opts)
+  config = function()
+    local snacks_opts = {
+      picker = {
+        -- your Snacks setup
+      },
+    }
+
     require('snacks_action_layer').setup({
       pickers = {
         git_status = {
           actions = require('user.git_actions'),
         },
       },
-    }, opts)
+    }, snacks_opts)
+
+    require('snacks').setup(snacks_opts)
   end,
 }
 ```
 
-### packer.nvim / plain Lua
-
-```lua
-use({
-  'folke/snacks.nvim',
-  config = function()
-    local overrides = require('snacks_action_layer').setup({
-      pickers = {
-        files = {
-          actions = require('user.file_actions'),
-        },
-      },
-    })
-    require('snacks').setup(vim.tbl_deep_extend('force', overrides, {
-      picker = {
-        -- your Snacks config
-      },
-    }))
-  end,
-})
-```
-
-You can also embed the helper spec directly: `require('snacks_action_layer').spec(opts)` returns a ready-to-use lazy.nvim module spec.
+If you prefer a single spec, use the helper: `return require('snacks_action_layer').spec(opts)`.
 
 ## Configuration Reference
 
