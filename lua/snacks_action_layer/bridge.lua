@@ -25,22 +25,14 @@ local function has_existing_key(existing_picker, source, section, key)
   return keys[key] ~= nil
 end
 
-local function merge_keymaps(config, picker_name)
-  local sections = { 'input', 'list' }
-  local resolved = {}
+local function get_picker_keymaps(config, picker_name)
   local pickers = config.pickers or {}
-  local default_conf = pickers.default or {}
   local picker_conf = pickers[picker_name] or {}
-  for _, section in ipairs(sections) do
-    resolved[section] = vim.tbl_deep_extend(
-      'force',
-      {},
-      (config.keymaps and config.keymaps[section]) or {},
-      (default_conf.keymaps and default_conf.keymaps[section]) or {},
-      (picker_conf.keymaps and picker_conf.keymaps[section]) or {}
-    )
-  end
-  return resolved
+  local keymaps = picker_conf.keymaps or {}
+  return {
+    input = vim.deepcopy(keymaps.input or {}),
+    list = vim.deepcopy(keymaps.list or {}),
+  }
 end
 
 local function add_keymap(target, section, key, mapping)
@@ -70,7 +62,7 @@ function M.build_overrides(config, existing_picker)
   local pickers = config.pickers or {}
   for name in pairs(pickers) do
     if name ~= 'default' then
-      local keymaps = merge_keymaps(config, name)
+      local keymaps = get_picker_keymaps(config, name)
       local source_entry
       for section, mappings in pairs(keymaps) do
         for key, mapping in pairs(mappings or {}) do

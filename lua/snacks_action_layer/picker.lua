@@ -4,13 +4,8 @@ local M = {}
 
 local function get_picker_config(config, picker_name)
   local pickers = config.pickers or {}
-  local merged = vim.tbl_deep_extend(
-    'force',
-    {},
-    config.picker or {},
-    (pickers.default and pickers.default.picker) or {},
-    (pickers[picker_name] and pickers[picker_name].picker) or {}
-  )
+  local merged =
+    vim.tbl_deep_extend('force', {}, config.picker or {}, (pickers[picker_name] and pickers[picker_name].picker) or {})
   merged.source = merged.source or 'action_layer'
   merged.confirm = merged.confirm or 'item_action'
   merged.layout = merged.layout or 'select'
@@ -35,14 +30,9 @@ local function merge_actions(base, overrides)
   return result
 end
 
-local function collect_order(defaults, specific)
+local function collect_order(order_list)
   local order = {}
-  for _, id in ipairs(defaults or {}) do
-    if type(id) == 'string' then
-      order[#order + 1] = id
-    end
-  end
-  for _, id in ipairs(specific or {}) do
+  for _, id in ipairs(order_list or {}) do
     if type(id) == 'string' then
       order[#order + 1] = id
     end
@@ -52,9 +42,11 @@ end
 
 function M.resolve_actions(picker_name, config)
   local pickers = config.pickers or {}
-  local default_conf = pickers.default or {}
-  local picker_conf = pickers[picker_name] or {}
-  local combined = merge_actions(default_conf.actions, picker_conf.actions)
+  local picker_conf = pickers[picker_name]
+  if not picker_conf then
+    return {}
+  end
+  local combined = merge_actions({}, picker_conf.actions)
 
   local filtered = {}
   for id, action_conf in pairs(combined) do
@@ -66,7 +58,7 @@ function M.resolve_actions(picker_name, config)
     end
   end
 
-  local order = collect_order(default_conf.order, picker_conf.order)
+  local order = collect_order(picker_conf.order)
   local ordered = {}
   local seen = {}
   for _, id in ipairs(order) do

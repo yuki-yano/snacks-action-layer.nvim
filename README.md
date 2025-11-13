@@ -45,7 +45,7 @@ If you prefer a single spec, use the helper: `return require('snacks_action_laye
 
 ```lua
 require('snacks_action_layer').setup({
-  picker = {       -- global action picker defaults
+  picker = {       -- global action picker defaults (UI settings only)
     source = 'action_layer',
     title = 'Actions',
     prompt = '> ',
@@ -53,22 +53,7 @@ require('snacks_action_layer').setup({
     format = 'text',
     confirm = 'item_action',
   },
-  keymaps = {      -- define your own keymaps; nothing is injected by default
-    input = {
-      -- ['>'] = { 'action_layer:open', mode = { 'n', 'i' }, nowait = true },
-    },
-    list = {
-      -- ['>'] = { 'action_layer:open', mode = { 'n' }, nowait = true },
-    },
-  },
   pickers = {
-    default = {
-      actions = {},
-      order = {},
-      keymaps = {},
-      metadata = {},
-      picker = {},
-    },
     git_status = { -- Snacks source name
       actions = { ... },
       order = { ... },
@@ -80,8 +65,8 @@ require('snacks_action_layer').setup({
 })
 ```
 
-- `pickers.default` acts as the base for every source. Values in `pickers.<name>` override it. The plugin ships with no builtin actions (Git or otherwise); you decide every handler.
-- Keymaps are merged in this order: global `keymaps` → `pickers.default.keymaps` → `pickers.<name>.keymaps`. Keys marked as `false` are omitted. Existing `snacks_opts.picker.sources[name].win.*.keys[key]` entries are never overwritten. Keymaps are injected only for sources explicitly defined in `pickers` (other than `default`). By default no keymaps are inserted, so make sure to define your preferred binding for `action_layer:open` yourself.
+- Every source must be defined explicitly under `pickers.<name>`. There is no shared "default" block—each picker describes its own actions/keymaps/metadata overrides. The plugin ships with no builtin actions (Git or otherwise); you decide every handler.
+- Keymaps live inside `pickers.<name>.keymaps`. Nothing is injected automatically, and existing Snacks keymaps are respected. Define your own binding for `action_layer:open` per picker.
 - `actions` entries look like:
 
 ```lua
@@ -112,13 +97,13 @@ Every handler receives the same context table:
 | `picker_name` | Source name (`git_status`, `files`, etc.). |
 | `items` | Deep copy of `picker:selected({ fallback = true })`. |
 | `summary` | Human-readable string built from `status`, `text`, or `value`. |
-| `metadata` | Merged metadata (`action` → picker-specific → default). |
+| `metadata` | Merged metadata (`action` → picker-specific). |
 | `close_picker()` | Closes the source picker (useful for commands that open other UI). |
 | `focus_list()` | Moves focus back to the original picker list. |
 
 ### Metadata merge order
 
-`action.metadata` overrides `pickers[picker_name].metadata`, which overrides `pickers.default.metadata`. Missing tables are treated as `{}`.
+`action.metadata` overrides `pickers[picker_name].metadata`. Missing tables are treated as `{}`.
 
 ## Sample Actions
 

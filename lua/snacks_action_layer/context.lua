@@ -27,16 +27,19 @@ end
 function M.build_summary(items)
   local lines = {}
   for _, item in ipairs(items or {}) do
-    local text = item.status or item.text or item.value
-    if text == nil then
-      if item.file then
-        text = item.file
-      elseif item.cwd then
-        text = item.cwd
-      end
+    local segments = {}
+    if item.status and item.status ~= '' then
+      segments[#segments + 1] = tostring(item.status)
     end
-    if text ~= nil then
-      lines[#lines + 1] = tostring(text)
+    local main = item.file or item.text or item.value or item.cwd
+    if main ~= nil then
+      segments[#segments + 1] = tostring(main)
+    end
+    if vim.tbl_isempty(segments) and item.value ~= nil then
+      segments[#segments + 1] = tostring(item.value)
+    end
+    if not vim.tbl_isempty(segments) then
+      lines[#lines + 1] = table.concat(segments, ' ')
     end
   end
   return table.concat(lines, '\n')
@@ -44,10 +47,9 @@ end
 
 local function resolve_metadata(config, picker_name, action_conf)
   local pickers = config.pickers or {}
-  local default_meta = (pickers.default and pickers.default.metadata) or {}
   local picker_meta = (pickers[picker_name] and pickers[picker_name].metadata) or {}
   local action_meta = action_conf.metadata or {}
-  return vim.tbl_deep_extend('force', {}, default_meta, picker_meta, action_meta)
+  return vim.tbl_deep_extend('force', {}, picker_meta, action_meta)
 end
 
 function M.make_ctx(picker, picker_name, items, action_conf, config)

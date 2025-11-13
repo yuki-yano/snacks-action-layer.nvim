@@ -7,19 +7,7 @@ local defaults = {
     format = 'text',
     confirm = 'item_action',
   },
-  keymaps = {
-    input = {},
-    list = {},
-  },
-  pickers = {
-    default = {
-      actions = {},
-      order = {},
-      keymaps = {},
-      metadata = {},
-      picker = {},
-    },
-  },
+  pickers = {},
 }
 
 local M = {}
@@ -30,13 +18,6 @@ end
 
 local function ensure_defaults(tbl)
   tbl.pickers = tbl.pickers or {}
-  tbl.pickers.default = tbl.pickers.default or {}
-  local base = tbl.pickers.default
-  base.actions = base.actions or {}
-  base.order = base.order or {}
-  base.keymaps = base.keymaps or {}
-  base.metadata = base.metadata or {}
-  base.picker = base.picker or {}
 end
 
 function M.merge(user_opts)
